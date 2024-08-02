@@ -1,8 +1,7 @@
-import express from 'express';
-const app = express();
+import pool from '../db.js';
+import bcrypt from 'bcrypt';
 
-//Registration endpoint
-app.post('/api/register', async (req, res) => {
+export const registerUser = async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
@@ -27,10 +26,9 @@ app.post('/api/register', async (req, res) => {
     console.error('Registration error:', err.message);
     res.status(500).send('Server error');
   }
-});
+};
 
-// Login endpoint
-app.post('/api/login', async (req, res) => {
+export const loginUser = async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
@@ -58,29 +56,26 @@ app.post('/api/login', async (req, res) => {
     console.error('Login error:', err.message);
     res.status(500).send('Server error');
   }
-});
+};
 
-// Logout endpoint
-app.post('/api/logout', (req, res) => {
+export const logoutUser = (req, res) => {
   req.session.destroy(err => {
     if (err) {
       return res.status(500).send('Logout error');
     }
     res.status(200).send('Logout successful');
   });
-});
+};
 
-// Get current logged-in user
-app.get('/api/current-user', (req, res) => {
+export const getCurrentUser = (req, res) => {
   if (req.session.userId) {
     res.json({ userId: req.session.userId });
   } else {
     res.status(401).send('Not logged in');
   }
-});
+};
 
-// Users endpoints
-app.get('/api/users', async (req, res) => {
+export const getUsers = async (req, res) => {
   if (!req.session.userId) {
     return res.status(401).send('Unauthorized');
   }
@@ -92,9 +87,9 @@ app.get('/api/users', async (req, res) => {
     console.error('Database query error:', err.message);
     res.status(500).send('Server error');
   }
-});
+};
 
-app.post('/api/users', async (req, res) => {
+export const createUser = async (req, res) => {
   if (!req.session.userId) {
     return res.status(401).send('Unauthorized');
   }
@@ -115,9 +110,9 @@ app.post('/api/users', async (req, res) => {
     console.error('Database insert error:', err.message);
     res.status(500).send('Server error');
   }
-});
+};
 
-app.put('/api/users/:id', async (req, res) => {
+export const updateUser = async (req, res) => {
   if (!req.session.userId) {
     return res.status(401).send('Unauthorized');
   }
@@ -139,9 +134,9 @@ app.put('/api/users/:id', async (req, res) => {
     console.error('Database update error:', err.message);
     res.status(500).send('Server error');
   }
-});
+};
 
-app.delete('/api/users/:id', async (req, res) => {
+export const deleteUser = async (req, res) => {
   if (!req.session.userId) {
     return res.status(401).send('Unauthorized');
   }
@@ -155,4 +150,4 @@ app.delete('/api/users/:id', async (req, res) => {
     console.error('Database delete error:', err.message);
     res.status(500).send('Server error');
   }
-});
+};
